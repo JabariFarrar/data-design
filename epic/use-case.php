@@ -17,8 +17,10 @@
 		</header>
 
 		<ul>
-			<li>User logs in to website --> System welcomes ProfileID to website</li>
+			<li>User requests website --> System loads website</li>
+			<li>User logs onto website --> System welcomes ProfileID to website</li>
 			<li>User searches products ---> System locates product matches</li>
+			<li>User chooses particular product --> Systetm shows product details</li>
 			<li>User favorites a product --> System stores favorites</li>
 		</ul>
 

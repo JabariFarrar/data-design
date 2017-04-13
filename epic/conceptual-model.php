@@ -27,7 +27,7 @@
 			<p><strong>Product</strong></p>
 			<ul>
 				<li>productID (primary key)</li>
-				<li>productProfileID (foreign key)</li>
+				<li>producPrice</li>
 				<li>productSku</li>
 			</ul>
 			<br>
