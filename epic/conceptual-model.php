@@ -16,6 +16,9 @@
 
 			</header>
 
+				<p>One user can like many products one time</p>
+				<p>Many users can like many products one time </p>
+
 		</body>
 
 
