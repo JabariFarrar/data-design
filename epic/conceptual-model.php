@@ -16,8 +16,10 @@
 
 			</header>
 
-				<p>One user can like many products one time</p>
-				<p>Many users can like many products one time </p>
+				<p>One verfied user can favorite many products one time</p>
+				<p>Many verified users can favorite many products one time </p>
+				<p>One verified user can unfavorite many products one time</p>
+				<p>Many verified users can unfavorite many products one time</p>
 
 		</body>
 
