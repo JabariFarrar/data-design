@@ -17,7 +17,7 @@
 		</header>
 
 		<ul>
-			<li>User logsin to website --> System welcomes ProfileID to website</li>
+			<li>User logs in to website --> System welcomes ProfileID to website</li>
 			<li>User searches products ---> System locates product under that search</li>
 			<li>User favorites a product --> System stores favorites</li>
 		</ul>

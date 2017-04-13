@@ -24,10 +24,17 @@
 				<li>profileSalt</li>
 			</ul>
 			<br>
+			<p><strong>Product</strong></p>
+			<ul>
+				<li>productID (primary key)</li>
+				<li>productProfileID (foreign key)</li>
+				<li>productSku</li>
+			</ul>
+			<br>
 			<p><strong>Favorite</strong></p>
 			<ul>
-				<li>likeProfileID</li>(foreign key)
-				<li>likeProductName</li>(foreign key)
+				<li>likeProfileID (foreign key)</li>
+				<li>likeProductName (foreign key)</li>
 				<li>likeDate</li>
 			</ul>
 			<br>
@@ -38,14 +45,5 @@
 				<p>Many verified users can unfavorite many products one time</p>
 
 		</body>
-
-
-
-
-
-
-
-
-
 
 </html>
