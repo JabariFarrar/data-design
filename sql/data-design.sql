@@ -39,7 +39,7 @@ CREATE TABLE product (
 );
 
 )
-CREATE TABLE `like` (
+CREATE TABLE favorite (
 	-- these are not auto_increment because they're still foreign keys
 	favoritesProfileId INT UNSIGNED NOT NULL,
 	favoritesProductname INT UNSIGNED NOT NULL,
