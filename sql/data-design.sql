@@ -49,7 +49,7 @@ CREATE TABLE `like` (
 	INDEX(favoritesproductName),
 	-- create the foreign key relations
 	FOREIGN KEY(favoritesProfileId) REFERENCES profile(profileId),
-	FOREIGN KEY(favoritesProducename) REFERENCES product(productId),
+	FOREIGN KEY(favoritesProductename) REFERENCES product(productId),
 	-- finally, create a composite foreign key with the two foreign keys
 	PRIMARY KEY(favoritesProfileId, favoritesProductname)
 );
