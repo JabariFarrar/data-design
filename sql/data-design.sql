@@ -4,7 +4,7 @@
 -- never ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever
 -- do this on live data!!!!
 DROP TABLE IF EXISTS favorite;
-DROP TABLE IF EXISTS tweet;
+DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS profile;
 
 -- the CREATE TABLE function is a function that takes tons of arguments to layout the table's schema
@@ -29,27 +29,23 @@ CREATE TABLE product (
 	-- this is for yet another primary key...
 	productId INT UNSIGNED AUTO_INCREMENT NOT NULL,
 	-- this is for a foreign key; auto_incremented is omitted by design
+	productName VARCHAR(64) NOT NULL,
 	productPrice DECIMAL NOT NULL,
-	-- this creates an index before making a foreign key
-	INDEX(productPrice),
-	-- this creates the actual foreign key relation
-	FOREIGN KEY(productPrice) REFERENCES profile(profileId),
 	-- and finally create the primary key
 	PRIMARY KEY(productId)
 );
 
-)
 CREATE TABLE favorite (
 	-- these are not auto_increment because they're still foreign keys
-	favoritesProfileId INT UNSIGNED NOT NULL,
-	favoritesProductname INT UNSIGNED NOT NULL,
-	favoritesDate DATETIME(6) NOT NULL,
+	favoriteProfileId INT UNSIGNED NOT NULL,
+	favoriteProductId INT UNSIGNED NOT NULL,
+	favoriteDate DATETIME NOT NULL,
 	-- index the foreign keys
-	INDEX(favoritesProfileId),
-	INDEX(favoritesproductName),
+	INDEX(favoriteProfileId),
+	INDEX(favoriteProductId),
 	-- create the foreign key relations
-	FOREIGN KEY(favoritesProfileId) REFERENCES profile(profileId),
-	FOREIGN KEY(favoritesProductname) REFERENCES product(productId),
+	FOREIGN KEY(favoriteProfileId) REFERENCES profile(profileId),
+	FOREIGN KEY(favoriteProductId) REFERENCES product(productId),
 	-- finally, create a composite foreign key with the two foreign keys
-	PRIMARY KEY(favoritesProfileId, favoritesProductname)
+	PRIMARY KEY(favoriteProfileId, favoriteProductId)
 );
