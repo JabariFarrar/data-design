@@ -3,7 +3,7 @@
 -- this is akin to reformatting and reinstalling Windows (OS X never needs a reinstall...) ;)
 -- never ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever ever
 -- do this on live data!!!!
-DROP TABLE IF EXISTS `like`;
+DROP TABLE IF EXISTS favorite;
 DROP TABLE IF EXISTS tweet;
 DROP TABLE IF EXISTS profile;
 
@@ -29,7 +29,7 @@ CREATE TABLE product (
 	-- this is for yet another primary key...
 	productId INT UNSIGNED AUTO_INCREMENT NOT NULL,
 	-- this is for a foreign key; auto_incremented is omitted by design
-	productPrice INT UNSIGNED NOT NULL,
+	productPrice DECIMAL NOT NULL,
 	-- this creates an index before making a foreign key
 	INDEX(productPrice),
 	-- this creates the actual foreign key relation
@@ -49,7 +49,7 @@ CREATE TABLE favorite (
 	INDEX(favoritesproductName),
 	-- create the foreign key relations
 	FOREIGN KEY(favoritesProfileId) REFERENCES profile(profileId),
-	FOREIGN KEY(favoritesProductename) REFERENCES product(productId),
+	FOREIGN KEY(favoritesProductname) REFERENCES product(productId),
 	-- finally, create a composite foreign key with the two foreign keys
 	PRIMARY KEY(favoritesProfileId, favoritesProductname)
 );
