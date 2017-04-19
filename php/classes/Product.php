@@ -3,7 +3,7 @@
  * An example of what it is like to favorite a bad etsy site
  * @author Jabari Farrar<jfarrar1@cnm.edu>
  */
-class Product implements \JsonSerializable {
+class Product  {
 
 
 	//create state variables
@@ -56,15 +56,20 @@ public function  getProductName() :string { return($this->productName)};
  * @throws \RangeException if $ProductName is >64 characters
  * @throws \TypeError if $ProductName is not a string**/
 public function  setProductName(string $ProductName): void {
-	// if productName is null immediately return it
-	if ($ProductName === null) {
-		$this->productName = null;
-		return;}
-	//verfy the productName is positive
-	if ($ProductName <= 0) {
-		throw(new\RangeException ("productName is not positive"));}
-	//convert and store productName
-	$this->productName = $newProductName;}
+	// verify the productName is secure
+	$newProductName = trim($newProductName);
+	$newProductName = filter_var($newProductName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+	if(empty($newProductName) === true) {
+		throw (new \InvalidArguementException ('productName content is empty or secure'));
+	}
+	//verify the productName will fit in the database
+	if(strlen($newProductName) > 64) {
+		throw(new \RangeException("productName too large"));
+	}
+	// store the productName
+	$this->productName = $newProductName;
+}
+
 
 /** accessor method for productPrice
  * @return int\null value of productPrice*/
@@ -85,7 +90,7 @@ public function  setProductPrice(?int $newProductPrice): void {
 	$this->productPrice = $newProductPrice;}
 
 
-public function __construct(?int $newProductID, string $newProductName, decimal $newProductPrice) {
+public function __construct(?int $newProductID, string $newProductName, float $newProductPrice) {
 	try {
 		$this->setProductID($newProductID);
 		$this->setProductName($newProductName);
