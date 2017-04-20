@@ -1,10 +1,10 @@
 <?php
+
 /**
  * An example of what it is like to favorite a bad etsy site
  * @author Jabari Farrar<jfarrar1@cnm.edu>
  */
-class Product  {
-
+class Product {
 
 	//create state variables
 
@@ -26,79 +26,104 @@ class Product  {
 	 **/
 	private $productPrice;
 
+	public function __construct(?int $newProductId, string $newProductName, float $newProductPrice) {
+		try {
+			$this->setProductId($newProductId);
+			$this->setProductName($newProductName);
+			$this->setProductPrice($newProductPrice);
+		} //determine what exception type was thrown
+		catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+			$exceptionType = get_class($exception);
+			throw(new $exceptionType($exception->getMessage(), 0, $exception));
+		}
+	}
+
 	// accessors & mutators for each state variable]]]]
 
-}
-/** accessor method for productId
- * @return int\null value of productId*/
-	public function  getProductId() :?int { return($this->productId)};
-/**mutator method for productId
- * @param int\null $newProductId
- * @throws \RangeException if $newProductId is not positive
- * @throws \TypeError if $newProductId is not an integer **/
-	public function  setProductId(?int $newProductId): void {
+	/**
+	 * accessor method for productId
+	 * @return int|null value of productId*
+	 **/
+	public function getProductId():?int {
+		return ($this->productId);
+	}
+
+	/**
+	 * mutator method for productId
+	 * @param int|null $newProductId new value of productId
+	 * @throws \RangeException if $newProductId is not positive
+	 * @throws \TypeError if $newProductId is not an integer *
+	 **/
+	public function setProductId(?int $newProductId) :void {
 		// if productId is null immediately return it
-		if ($newProductId === null) {
+		if($newProductId === null) {
 			$this->productId = null;
-			return;}
-	//verfy the productID is positive
-		if ($newProductId <= 0) {
-			throw(new\RangeException ("productId is not positive"));}
-		//convert and store productId
-		$this->productId = $newProductId;}
-
-
-/** accessor method for productName
- * @return string  value of productName*/
-public function  getProductName() :string { return($this->productName)};
-/**mutator method for productName
- * @param string $ProductName new value of productName
- * @throws \RangeException if $ProductName is >64 characters
- * @throws \TypeError if $ProductName is not a string**/
-public function  setProductName(string $ProductName): void {
-	// verify the productName is secure
-	$newProductName = trim($newProductName);
-	$newProductName = filter_var($newProductName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-	if(empty($newProductName) === true) {
-		throw (new \InvalidArguementException ('productName content is empty or secure'));
+			return;
+		}
+		//verfy the productID is positive
+		if($newProductId <= 0) {
+			throw(new\RangeException ("productId is not positive"));
+		}
+		// convert and store productId
+		$this->productId = $newProductId;
 	}
-	//verify the productName will fit in the database
-	if(strlen($newProductName) > 64) {
-		throw(new \RangeException("productName too large"));
+
+	/**
+	 * accessor method for productName
+	 * @return string  value of productName
+	 **/
+	public function getProductName(): string {
+		return ($this->productName);
 	}
-	// store the productName
-	$this->productName = $newProductName;
-}
 
-
-/** accessor method for productPrice
- * @return int\null value of productPrice*/
-public function  getProductPrice() :?int { return($this->productPrice)};
-/**mutator method for productPrice
- * @param int\null $newProductPrice
- * @throws \RangeException if $newProductPrice is not positive
- * @throws \TypeError if $newProductPrice is not an integer **/
-public function  setProductPrice(?int $newProductPrice): void {
-	// if productPrice is null immediately return it
-	if ($newProductPrice === null) {
-		$this->productPrice = null;
-		return;}
-	//verfy the productPrice is positive
-	if ($newProductPrice <= 0) {
-		throw(new\RangeException ("productPrice is not positive"));}
-	//convert and store productPrice
-	$this->productPrice = $newProductPrice;}
-
-
-public function __construct(?int $newProductID, string $newProductName, float $newProductPrice) {
-	try {
-		$this->setProductID($newProductID);
-		$this->setProductName($newProductName);
-		$this->setProductPrice($newProductPrice);
+	/**
+	 * mutator method for productName
+	 * @param string $newProductName new value of productName
+	 * @throws \RangeException if $ProductName is >64 characters
+	 * @throws \TypeError if $ProductName is not a string*
+	 **/
+	public function setProductName(string $newProductName): void {
+		// verify the productName is secure
+		$newProductName = trim($newProductName);
+		$newProductName = filter_var($newProductName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+		if(empty($newProductName) === true) {
+			throw (new \InvalidArguementException ("productName content is empty or insecure"));
+		}
+		//verify the productName will fit in the database
+		if(strlen($newProductName) > 64) {
+			throw(new \RangeException("productName too large"));
+		}
+		// store the productName
+		$this->productName = $newProductName;
 	}
-		//determine what exception type was thrown
-	catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
-		$exceptionType = get_class($exception);
-		throw(new $exceptionType($exception->getMessage(), 0, $exception));
+
+
+	/**
+	 * accessor method for productPrice
+	 * @return int|null value of productPrice*
+	 **/
+	public function getProductPrice():?int {
+		return ($this->productPrice);
 	}
+
+	/**
+	 * mutator method for productPrice
+	 * @param int|null $newProductPrice new value of productPrice
+	 * @throws \RangeException if $newProductPrice is not positive
+	 * @throws \TypeError if $newProductPrice is not an integer *
+	 **/
+	public function setProductPrice(?int $newProductPrice): void {
+		// if productPrice is null immediately return it
+		if($newProductPrice === null) {
+			$this->productPrice = null;
+			return;
+		}
+		//verify the productPrice is positive
+		if($newProductPrice <= 0) {
+			throw(new \RangeException ("productPrice is not positive"));
+		}
+		//convert and store productPrice
+		$this->productPrice = $newProductPrice;
+	}
+
 }
