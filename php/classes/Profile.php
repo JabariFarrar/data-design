@@ -47,9 +47,9 @@ class Profile {
 	public function __construct(?int $newProfileId, string $newProfileActivationToken, string $newProfileHash, string $newProfilePhone, string $newProfileSalt) {
 		try {
 			$this->setProfileId($newProfileId);
-			$this->setProfileActivationToken($newProfileActivationToken);
+			$this->setprofileActivationToken($newProfileActivationToken);
 			$this->setProfileHash($newProfileHash);
-			$this->setPofilePhone($newProfilePhone);
+			$this->setProfilePhone($newProfilePhone);
 			$this->setProfileSalt($newProfileSalt);
 		} //determine what exception type was thrown
 		catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
@@ -122,7 +122,7 @@ class Profile {
 	 * @return string  value of profileEmail
 	 **/
 	public function getProfileEmail(): string {
-		return ($this->ProfileEmail);
+		return ($this->profileEmail);
 	}
 
 	/**
@@ -232,5 +232,36 @@ class Profile {
 		// store the productName
 		$this->productName = $newProductName;
 	}
+}
+/**
+ * accessor method for favorite date
+ *
+ * @return \DateTime value of favorite date
+ **/
+public function getFavoriteDate() : \DateTime {
+	return($this->favoriteDate);
+}
+
+/**
+ * mutator method for favorite date
+ *
+ * @param \DateTime|string|null $newFavoriteDate date as a DateTime object or string (or null to load the current time)
+ * @throws \InvalidArgumentException if $newFavoriteDate is not a valid object or string
+ * @throws \RangeException if $newFavoriteDate is a date that does not exist
+ **/
+public function setFavoriteDate($newFavoriteDate = null) : void {
+	// base case: if the date is null, use the current date and time
+	if($newFavoriteDate === null) {
+		$this->FavoriteDate = new \DateTime();
+		return;
+	}
+	// store the like date using the ValidateDate trait
+	try {
+		$newFavoriteDate = self::validateDateTime($newFavoriteDate);
+	} catch(\InvalidArgumentException | \RangeException $exception) {
+		$exceptionType = get_class($exception);
+		throw(new $exceptionType($exception->getMessage(), 0, $exception));
+	}
+	$this->tweetDate = $newFavoriteDate;
 }
 
