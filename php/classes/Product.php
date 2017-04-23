@@ -4,7 +4,7 @@
  * An example of what it is like to favorite a bad etsy site
  * @author Jabari Farrar<jfarrar1@cnm.edu>
  */
-class Product {
+class Product implements  \JsonSerializable {
 
 	//create state variables
 
@@ -54,19 +54,14 @@ class Product {
 	 * @throws \RangeException if $newProductId is not positive
 	 * @throws \TypeError if $newProductId is not an integer *
 	 **/
-	public function setProductId(?int $newProductId) :void {
-		// if productId is null immediately return it
-		if($newProductId === null) {
-			$this->productId = null;
-			return;
-		}
-		//verfy the productID is positive
-		if($newProductId <= 0) {
-			throw(new\RangeException ("productId is not positive"));
-		}
-		// convert and store productId
-		$this->productId = $newProductId;
-	}
+	public function setProductId(?int $newProductId) :
+	// if profile id is null immediately return it if ($newProductId === null) {
+	$this->productId = null;
+	return;}
+	//verify the product Id is postive
+	if($newProductId <=0) throw (new \RangeException("profile id is not positive"));}
+	//convert and store the product id
+	$this->productId = $newProductId
 
 	/**
 	 * accessor method for productName
@@ -74,7 +69,6 @@ class Product {
 	 **/
 	public function getProductName(): string {
 		return ($this->productName);
-	}
 
 	/**
 	 * mutator method for productName
@@ -112,7 +106,7 @@ class Product {
 	 * @throws \RangeException if $newProductPrice is not positive
 	 * @throws \TypeError if $newProductPrice is not an integer *
 	 **/
-	public function setProductPrice(?int $newProductPrice): void {
+	public function setProductPrice(?float $newProductPrice): void {
 		// if productPrice is null immediately return it
 		if($newProductPrice === null) {
 			$this->productPrice = null;
@@ -126,4 +120,12 @@ class Product {
 		$this->productPrice = $newProductPrice;
 	}
 
+	/**
+	 * formats the state variables for JSON serialization
+	 *
+	 * @return array resulting state variables to serialize
+	 **/
+	public function jsonSerialize() {
+		$fields = get_object_vars($this);
+	}
 }

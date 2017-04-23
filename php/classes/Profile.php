@@ -4,7 +4,7 @@
  * An example of what it is like to favorite a bad etsy site
  * @author Jabari Farrar<jfarrar1@cnm.edu>
  */
-class Profile {
+class Profile implements \JsonSerializable{
 
 	//create state variables
 
@@ -44,10 +44,11 @@ class Profile {
 	 **/
 	private $profileSalt;
 
-	public function __construct(?int $newProfileId, string $newProfileActivationToken, string $newProfileHash, string $newProfilePhone, string $newProfileSalt) {
+	public function __construct(?int $newProfileId, string $newprofileEmail, string $newProfileActivationToken, string $newProfileHash, string $newProfilePhone, string $newProfileSalt) {
 		try {
 			$this->setProfileId($newProfileId);
-			$this->setprofileActivationToken($newProfileActivationToken);
+			$this->setProfileActivationToken($newProfileActivationToken);
+			$this->setProfileEmail($newprofileEmail);
 			$this->setProfileHash($newProfileHash);
 			$this->setProfilePhone($newProfilePhone);
 			$this->setProfileSalt($newProfileSalt);
@@ -67,27 +68,21 @@ class Profile {
 	public function getProfileId():?int {
 		return ($this->profileId);
 	}
-
 	/**
-	 * mutator method for profileId
-	 * @param int|null $newProfileId new value of profileId
+	 * mutator method for  profile id
+	 *
+	 * @param int $newProfileId new value of  profile id
 	 * @throws \RangeException if $newProfileId is not positive
-	 * @throws \TypeError if $newProfileId is not an integer *
+	 * @throws \TypeError if $newProfileId is not an integer
 	 **/
-	public function setProfileId(?int $newProfileId): void {
-		// if profileId is null immediately return it
-		if($newProfileId === null) {
-			$this->profileId = null;
-			return;
-		}
-		//verfy the profileID is positive
+	public function setProfileId(int $newProfileId) : void {
+		// verify the profile id is positive
 		if($newProfileId <= 0) {
-			throw(new\RangeException ("profileId is not positive"));
+			throw(new \RangeException(" profile id is not positive"));
 		}
-		// convert and store profileId
-		$this->profileId = $newProfileId;
+		// convert and store the profile id
+		$this->ProfileId = $newProfileId;
 	}
-
 	/**
 	 * accessor method for profileActivationToken
 	 * @return string  value of ActivationToken
@@ -131,20 +126,19 @@ class Profile {
 	 * @throws \RangeException if $ProfileEmail is >128 characters
 	 * @throws \TypeError if $ProfileEmail is not a string*
 	 **/
-	public function setProfileEmail(string $newProfileEmail): void {
-		// verify the productName is secure
-		$newProductName = trim($newProductName);
-		$newProductName = filter_var($newProductName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-		if(empty($newProductName) === true) {
-			throw (new \InvalidArguementException ("productName content is empty or insecure"));
+	public function setProductName(string $newProfileEmail): void {
+		// verify the productPhone is secure
+		$newProfilePhone = trim($newProductEmail);
+		$newProfilePhone= filter_var($newProductEmail, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+		if(empty($newProfileEmail) === true) {
+			throw (new \InvalidArguementException ("profileEmail content is empty or insecure"));
 		}
-		//verify the productName will fit in the database
-		if(strlen($newProductName) > 64) {
-			throw(new \RangeException("productName too large"));
+		//verify the profilePhone will fit in the database
+		if(strlen($newProfileEmail) > 128) {
+			throw(new \RangeException("profileEmail too long"));
 		}
-		// store the productName
-		$this->productName = $newProductName;
-	}
+		// store the profile email
+		$this->profileEmail = $newProfileEmail;
 
 	/**
 	 * accessor method for profileHash
@@ -185,24 +179,24 @@ class Profile {
 
 	/**
 	 * mutator method for profilePhone
-	 * @param string $newProfilePhone new value of profilePhone
-	 * @throws \RangeException if $ProfilePhone is >32 characters
-	 * @throws \TypeError if $ProfilePhone is not a string*
+	 * @param int|null $newprofilePhone new value of profile phone
+	 * @throws \RangeException if $newProfilePhone is not positive
+	 * @throws \TypeError if $newProfilePhone is not an integer
 	 **/
-	public function setProfilePhone(string $newProfilePhone): void {
-		// verify the productName is secure
-		$newProductName = trim($newProductName);
-		$newProductName = filter_var($newProductName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-		if(empty($newProductName) === true) {
-			throw (new \InvalidArguementException ("productName content is empty or insecure"));
+		public function setProfilePhone(?int $newProfilePhone) : void {
+			//if tweet id is null immediately return it
+			if($newProfilePhone === null) {
+				$this->profilePhone = null;
+				return;
+			}
+			// verify the profile phone is positive
+			if($newProfilePhone <= 0) {
+				throw(new \RangeException("profile phone is not positive"));
+			}
+			// convert and store the profile phone
+			$this->profilePhone = $newProfilePhone;
 		}
-		//verify the productName will fit in the database
-		if(strlen($newProductName) > 64) {
-			throw(new \RangeException("productName too large"));
-		}
-		// store the productName
-		$this->productName = $newProductName;
-	}
+
 
 	/**
 	 * accessor method for profileSalt
@@ -219,49 +213,28 @@ class Profile {
 	 * @throws \TypeError if $ProfileSalt is not a string*
 	 **/
 	public function setProfileSalt(string $newProfileSalt): void {
-		// verify the productName is secure
-		$newProductName = trim($newProductName);
-		$newProductName = filter_var($newProductName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
-		if(empty($newProductName) === true) {
-			throw (new \InvalidArguementException ("productName content is empty or insecure"));
+		// verify the profileSalt is secure
+		$newProfileSalt = trim($newProfileSalt);
+		$newProfileSalt = filter_var($newProfileSalt, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+		if(empty($newProfileSalt) === true) {
+			throw (new \InvalidArguementException ("profileSalt content is empty or insecure"));
 		}
-		//verify the productName will fit in the database
-		if(strlen($newProductName) > 64) {
-			throw(new \RangeException("productName too large"));
+		//verify the profileSalt will fit in the database
+		if(strlen($newProfileSalt) > 64) {
+			throw(new \RangeException("profileSalt too large"));
 		}
-		// store the productName
-		$this->productName = $newProductName;
+		// store the profileSalt
+		$this->profileSalt = $newProfileSalt;
 	}
-}
-/**
- * accessor method for favorite date
- *
- * @return \DateTime value of favorite date
- **/
-public function getFavoriteDate() : \DateTime {
-	return($this->favoriteDate);
 }
 
 /**
- * mutator method for favorite date
+ * formats the state variables for JSON serialization
  *
- * @param \DateTime|string|null $newFavoriteDate date as a DateTime object or string (or null to load the current time)
- * @throws \InvalidArgumentException if $newFavoriteDate is not a valid object or string
- * @throws \RangeException if $newFavoriteDate is a date that does not exist
+ * @return array resulting state variables to serialize
  **/
-public function setFavoriteDate($newFavoriteDate = null) : void {
-	// base case: if the date is null, use the current date and time
-	if($newFavoriteDate === null) {
-		$this->FavoriteDate = new \DateTime();
-		return;
-	}
-	// store the like date using the ValidateDate trait
-	try {
-		$newFavoriteDate = self::validateDateTime($newFavoriteDate);
-	} catch(\InvalidArgumentException | \RangeException $exception) {
-		$exceptionType = get_class($exception);
-		throw(new $exceptionType($exception->getMessage(), 0, $exception));
-	}
-	$this->tweetDate = $newFavoriteDate;
+public function jsonSerialize() {
+	$fields = get_object_vars($this);
+}
 }
 
