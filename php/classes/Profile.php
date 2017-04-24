@@ -227,6 +227,68 @@ class Profile implements \JsonSerializable{
 		$this->profileSalt = $newProfileSalt;
 	}
 }
+	/**
+	 * inserts this Profile into mySQL
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError if $pdo is not a PDO connection object
+	 **/
+	public function insert(\PDO $pdo) : void {
+		// enforce the tweetId is null (i.e., don't insert a profile that already exists)
+		if($this->profileId !== null) {
+			throw(new \PDOException("not a new profile"));
+		}
+		// create query template
+		$query = "INSERT INTO profile(profileId, profileActivationToken, profileEmail, profileHash, profilePhone, profileSalt) VALUES(:profileId, :profileActivationToken, :profileEmail, :profileHash, :profilePhone, :profileSalt)";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holders in the template
+
+		$parameters = ["ProfileId" => $this->ProfileId, "tweetContent" => $this->tweetContent, "tweetDate" => $formattedDate];
+		$statement->execute($parameters);
+		// update the null tweetId with what mySQL just gave us
+		$this->profileId = intval($pdo->lastInsertId());
+	}
+
+	/**
+	 * deletes this profile from mySQL
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError if $pdo is not a PDO connection object
+	 **/
+	public function delete(\PDO $pdo) : void {
+		// enforce the profileId is not null (i.e., don't delete a profile that hasn't been inserted)
+		if($this->profileId === null) {
+			throw(new \PDOException("unable to delete a profile that does not exist"));
+		}
+		// create query template
+		$query = "DELETE FROM profile WHERE profileId = :profileId";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holder in the template
+		$parameters = ["ProfileId" => $this->ProfileId];
+		$statement->execute($parameters);
+	}
+
+	/**
+	 * updates this Profile in mySQL
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError if $pdo is not a PDO connection object
+	 **/
+	public function update(\PDO $pdo) : void {
+		// enforce the profileId is not null (i.e., don't update a profile that hasn't been inserted)
+		if($this->profileId === null) {
+			throw(new \PDOException("unable to update a profile that does not exist"));
+		}
+		// create query template
+		$query = "UPDATE profile SET ProfileId = :ProfileId, tweetContent = :tweetContent, tweetDate = :tweetDate WHERE tweetId = :tweetId";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holders in the template
+		$parameters = ["ProfileId" => $this->ProfileId, "tweetContent" => $this->tweetContent, "tweetDate" => $formattedDate, "tweetId" => $this->tweetId];
+		$statement->execute($parameters);
+	}
 
 /**
  * formats the state variables for JSON serialization

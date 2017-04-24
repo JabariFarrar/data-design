@@ -136,6 +136,51 @@ class Favorite implement \JsonSerializable {
 	}
 	$this->favoriteDate = $newfavoriteDate;
 
+
+	/**
+	 * inserts this favorites into mySQL
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError if $pdo is not a PDO connection object
+	 **/
+	public function insert(\PDO $pdo) : void {
+		// enforce the favoriteId is null (i.e., don't insert a favorite that already exists)
+		if($this->favoriteId !== null) {
+			throw(new \PDOException("not a new favorite"));
+		}
+		// create query template
+		$query = "INSERT INTO favorite(favoriteProfileId, favoriteProductId, favoriteDate) VALUES(:favoriteProfileId, :favoriteProductId, :favoriteDate)";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holders in the template
+		$formattedDate = $this->favoriteDate->format("Y-m-d H:i:s");
+		$parameters = ["favoriteProfileId" => $this->favoriteProfileId, "favoriteProductid" => $this->favoriteProductId, "favoriteDate" => $formattedDate];
+		$statement->execute($parameters);
+		// update the null favoriteProfileId with what mySQL just gave us
+		$this->favoriteProfileId = intval($pdo->lastInsertId());
+	}
+
+	/**
+	 * deletes this favorite from mySQL
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError if $pdo is not a PDO connection object
+	 **/
+	public function delete(\PDO $pdo) : void {
+		// enforce the favoriteProfileId is not null (i.e., don't delete a tweet that hasn't been inserted)
+		if($this->favoriteProfileId === null) {
+			throw(new \PDOException("unable to delete a favorite that does not exist"));
+		}
+		// create query template
+		$query = "DELETE FROM favorite WHERE favoriteProfileId = :favoriteProfileId";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holder in the template
+		$parameters = ["favoriteProfileId" => $this->favoriteProfileId];
+		$statement->execute($parameters);
+	}
+
+
 	/**
 	 * formats the state variables for JSON serialization
 	 *
