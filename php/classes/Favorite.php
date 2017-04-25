@@ -17,7 +17,7 @@ class Favorite implement \JsonSerializable {
 	$favoriteProfileId;
 
 	/**
-	 * FavoriteId for this Product
+	 * favoriteProductId for this Product
 	 * @var int|null $favoriteProductId
 	 **/
 	private
@@ -30,8 +30,15 @@ class Favorite implement \JsonSerializable {
 	private
 	$favoriteDate;
 
-	public
-	function __construct(?int $newfavoriteProfileId, int $newfavoriteProductId, float $newfavoriteDate = null) {
+	/**
+	 * Constructor for this favorite
+	 * @param int $favoriteProfileId of the parent profile
+	 * @param int $favoriteProductId of the parent profile
+	 * @param \ $favoriteDate | null $newfavoriteDate date the product was liked
+	 * @throws \Exception if some other exception occurs
+	 **/
+
+	publicfunction __construct(int $newfavoriteProfileId, int $newfavoriteProductId, $newfavoriteDate = null) {
 		try {
 			$this->setfavoriteProfileId($newfavoriteProfileId);
 			$this->setfavoriteProductId($newfavoriteProductId);
@@ -49,8 +56,7 @@ class Favorite implement \JsonSerializable {
 	 * @return int|null value of favoriteProfileId*
 	 **/
 
-	public
-	function getFavoriteProfileId():?int {
+	public function getFavoriteProfileId():?int {
 		return ($this->profileId);
 	}
 
@@ -60,16 +66,11 @@ class Favorite implement \JsonSerializable {
 	 * @throws \RangeException if $newfavoriteProfileId is not positive
 	 * @throws \TypeError if $newfavoriteProfileId is not an integer *
 	 **/
-	public
-	function setfavoriteProfileId(?int $newfavoriteProfileId): void {
-		// if FavoritProfileId is null immediately return it
-		if($newfavoriteProfileId === null) {
-			$this->ProfileId = null;
-			return;
-		}
+	public function setfavoriteProfileId(?int $newfavoriteProfileId): void {
+
 		//verfy the ProfileID is positive
 		if($newfavoriteProfileId <= 0) {
-			throw(new\RangeException ("favoriteProfileId is not positive"));
+			throw(new\RangeException ("favorite ProfileId is not positive"));
 		}
 		// convert and store favoriteProfileId
 		$this->favoriteProfileId = $newfavoriteProfileId;
@@ -79,8 +80,7 @@ class Favorite implement \JsonSerializable {
 	 * accessor method for favoriteProductId
 	 * @return int|null value of favoriteProductId*
 	 **/
-	public
-	function getFavoriteProductId():?int {
+	public function getFavoriteProductId():?int {
 		return ($this->productId);
 	}
 
@@ -99,7 +99,7 @@ class Favorite implement \JsonSerializable {
 		}
 		//verfy the ProductID is positive
 		if($newfavoriteProductId <= 0) {
-			throw(new\RangeException ("favoriteProductId is not positive"));
+			throw(new\RangeException ("favorite ProductId is not positive"));
 		}
 		// convert and store favoriteProductId
 		$this->favoriteProductId = $newfavoriteProductId;
@@ -110,8 +110,7 @@ class Favorite implement \JsonSerializable {
 	 *
 	 * @return \DateTime value of favorite date
 	 **/
-	public
-	function favoriteDate(): \DateTime {
+	public function getfavoriteDate(): \DateTime {
 		return ($this->favoriteDate);
 	}
 
@@ -136,7 +135,6 @@ class Favorite implement \JsonSerializable {
 	}
 	$this->favoriteDate = $newfavoriteDate;
 
-
 	/**
 	 * inserts this favorites into mySQL
 	 *
@@ -153,8 +151,8 @@ class Favorite implement \JsonSerializable {
 		$query = "INSERT INTO favorite(favoriteProfileId, favoriteProductId, favoriteDate) VALUES(:favoriteProfileId, :favoriteProductId, :favoriteDate)";
 		$statement = $pdo->prepare($query);
 		// bind the member variables to the place holders in the template
-		$formattedDate = $this->favoriteDate->format("Y-m-d H:i:s");
-		$parameters = ["favoriteProfileId" => $this->favoriteProfileId, "favoriteProductid" => $this->favoriteProductId, "favoriteDate" => $formattedDate];
+		$formattedDate = $this->favoriteDate->format("Y-m-d H:i:s:u");
+		$parameters = ["favoriteProfileId" => $this->favoriteProfileId, "favoriteProductId" => $this->favoriteProductId, "favoriteDate" => $formattedDate];
 		$statement->execute($parameters);
 		// update the null favoriteProfileId with what mySQL just gave us
 		$this->favoriteProfileId = intval($pdo->lastInsertId());
@@ -168,7 +166,7 @@ class Favorite implement \JsonSerializable {
 	 * @throws \TypeError if $pdo is not a PDO connection object
 	 **/
 	public function delete(\PDO $pdo) : void {
-		// enforce the favoriteProfileId is not null (i.e., don't delete a tweet that hasn't been inserted)
+		// enforce the favoriteProfileId is not null (i.e., don't delete a favorite that hasn't been inserted)
 		if($this->favoriteProfileId === null) {
 			throw(new \PDOException("unable to delete a favorite that does not exist"));
 		}
@@ -180,7 +178,65 @@ class Favorite implement \JsonSerializable {
 		$statement->execute($parameters);
 	}
 
+	/**
+ * gets the Like by favoriteProductID and favoriteProfileID
+ *
+ * @param \PDO $pdo PDO connection object
+ * @param int $favoriteProfileId profile id to search for
+ * @param int $favoriteProductId  id to search for
+ * @return Like|null Like found or null if not found
+ */
+	public static function getfavoriteByLikefavoriteProductIdAndfavoriteProfileId(\PDO $pdo, int $favoriteProfileId, int $favoriteProductId) : ?Like {
+		// sanitize the profile id and product id before searching
+		if($favoriteProfileId <= 0) {
+			throw(new \PDOException("profile id is not positive"));
+		}
+		if($favoriteProductId <= 0) {
+			throw(new \PDOException("product id is not positive"));
+		}
+		// create query template
+		$query = "SELECT favoriteProfileId, favoriteProductId, favoriteDate FROM `favorite` WHERE favoriteProfileId = :favoriteProfileId AND favoriteProductId = :favoriteProductId";
+		$statement = $pdo->prepare($query);
+		// bind the product Id and profile id to the place holder in the template
+		$parameters = ["favoriteProfileId" => $favoriteProfileId, "favoriteProductId" => $favoriteProductId];
+		$statement->execute($parameters);
+		// grab the favorite from mySQL
+		try {
+			$favorite = null;
+			$statement->setFetchMode(\PDO::FETCH_ASSOC);
+			$row = $statement->fetch();
+			if($row !== false) {
+				$like = new Favorite($row["favoriteProfileId"], $row["favoriteProductId"], $row["favoriteDate"]);
+			}
+		} catch(\Exception $exception) {
+			// if the row couldn't be converted, rethrow it
+			throw(new \PDOException($exception->getMessage(), 0, $exception));
+		}
+		return ($favorite);
+	}
 
+/**
+ * updates this Favorite in mySQL
+ *
+ * @param \PDO $pdo PDO connection object
+ * @throws \PDOException when mySQL related errors occur
+ * @throws \TypeError if $pdo is not a PDO connection object
+ **/
+	public function update(\PDO $pdo) : void {
+		// enforce the favoriteProfileId is not null (i.e., don't update a tweet that hasn't been inserted)
+		if($this->favoriteProfileId === null) {
+			throw(new \PDOException("unable to update a tweet that does not exist"));
+		}
+		// create query template
+		$query = "UPDATE Favorite SET favoriteProfileId = : favoriteProfileId, favoriteProductId = :favoriteProductID, favoriteDate = :favoritetDate WHERE favoriteProfileId = :favoriteProfileId";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holders in the template
+		$formattedDate = $this->favoritetDate->format("Y-m-d H:i:s:u");
+		$parameters = ["favoriteProfileId" => $this->favoriteProfileId, "favoriteProductId" => $this->favoriteProductId, "tweetDate" => $formattedDate, "favoriteProfileId" => $this->favoriteProfileIdId];
+		$statement->execute($parameters);
+	}
+
+/**
 	/**
 	 * formats the state variables for JSON serialization
 	 *

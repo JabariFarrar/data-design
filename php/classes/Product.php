@@ -119,8 +119,104 @@ class Product implements  \JsonSerializable {
 		//convert and store productPrice
 		$this->productPrice = $newProductPrice;
 	}
-
 	/**
+	 * inserts this product into mySQL
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError if $pdo is not a PDO connection object
+	 **/
+	public function insert(\PDO $pdo) : void {
+		// enforce the productId is null (i.e., don't insert a productID that already exists)
+		if($this->productId !== null) {
+			throw(new \PDOException("not a new productId"));
+		}
+		// create query template
+		$query = "INSERT INTO product(productId, productName, productPrice) VALUES(:productId, :productName, :productPrice)";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holders in the template
+		$parameters = ["productId" => $this->productId, "productName" => $this->productName, "productPrice" => "productPrice"];
+		$statement->execute($parameters);
+		// update the null ProductId with what mySQL just gave us
+		$this->productId = intval($pdo->lastInsertId());
+	}
+	/**
+	 * deletes this favorite from mySQL
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError if $pdo is not a PDO connection object
+	 **/
+	public function delete(\PDO $pdo) : void {
+		// enforce the productId is not null (i.e., don't delete a product that hasn't been inserted)
+		if($this->ProductId === null) {
+			throw(new \PDOException("unable to delete a product that does not exist"));
+		}
+		// create query template
+		$query = "DELETE FROM product WHERE productId = :productId";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holder in the template
+		$parameters = ["productId" => $this->productId];
+		$statement->execute($parameters);
+	}
+	/**
+	 * gets the Product Name by Product ID
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @param int $productId to search for
+	 * @return \SplFixedArray array of Products found or null if not found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when variables are not the correct data type
+	 **/
+	public static function getproductNameByproductId(\PDO $pdo, int $likeTweetId) : \SplFixedArray {
+		// sanitize the product id
+		$likeProductId = filter_var($productId, FILTER_VALIDATE_INT);
+		if($ProductId <= 0) {
+			throw(new \PDOException("product id is not positive"));
+		}
+		// create query template
+		$query = "SELECT productId, productName, productPrice FROM `product WHERE productId = :productId";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holders in the template
+		$parameters = ["productId" => $productId];
+		$statement->execute($parameters);
+		// build the array of products
+		$proudct = new \SplFixedArray($statement->rowCount());
+		$statement->setFetchMode(\PDO::FETCH_ASSOC);
+		while(($row = $statement->fetch()) !== false) {
+			try {
+				$productId = new productId($row["productID"], $row["productName"], $row["productPrice"]);
+				$productId[$productId->key()] = $productId;
+				$productId->next();
+			} catch(\Exception $exception) {
+				// if the row couldn't be converted, rethrow it
+				throw(new \PDOException($exception->getMessage(), 0, $exception));
+			}
+		}
+		return ($productID);
+
+		/**
+		 * updates this Product in mySQL
+		 *
+		 * @param \PDO $pdo PDO connection object
+		 * @throws \PDOException when mySQL related errors occur
+		 * @throws \TypeError if $pdo is not a PDO connection object
+		 **/
+		public function update(\PDO $pdo) : void {
+			// enforce the ProductId is not null (i.e., don't update a ProductId that hasn't been inserted)
+			if($this->favoriteProfileId === null) {
+				throw(new \PDOException("unable to update a product ID that does not exist"));
+			}
+			// create query template
+			$query = "UPDATE Product SET productId = : ProuctId, ProductName = :ProductName, productPrice = :ProductPrice WHERE ProductId = :productId";
+			$statement = $pdo->prepare($query);
+			// bind the member variables to the place holders in the template
+			$parameters = ["ProductId" => $this->ProductId, "productName" => $this->productName, "productPrice"  $this-> prouduct "productPrice"];
+			$statement->execute($parameters);
+		}
+
+
+	}	/**
 	 * formats the state variables for JSON serialization
 	 *
 	 * @return array resulting state variables to serialize

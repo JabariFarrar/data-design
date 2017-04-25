@@ -59,7 +59,6 @@ class Profile implements \JsonSerializable{
 		}
 	}
 
-	// accessors & mutators for each state variable]]]]
 
 	/**
 	 * accessor method for profileId
@@ -184,7 +183,7 @@ class Profile implements \JsonSerializable{
 	 * @throws \TypeError if $newProfilePhone is not an integer
 	 **/
 		public function setProfilePhone(?int $newProfilePhone) : void {
-			//if tweet id is null immediately return it
+			//if profile id is null immediately return it
 			if($newProfilePhone === null) {
 				$this->profilePhone = null;
 				return;
@@ -235,7 +234,7 @@ class Profile implements \JsonSerializable{
 	 * @throws \TypeError if $pdo is not a PDO connection object
 	 **/
 	public function insert(\PDO $pdo) : void {
-		// enforce the tweetId is null (i.e., don't insert a profile that already exists)
+		// enforce the profile Id is null (i.e., don't insert a profile that already exists)
 		if($this->profileId !== null) {
 			throw(new \PDOException("not a new profile"));
 		}
@@ -244,9 +243,9 @@ class Profile implements \JsonSerializable{
 		$statement = $pdo->prepare($query);
 		// bind the member variables to the place holders in the template
 
-		$parameters = ["ProfileId" => $this->ProfileId, "tweetContent" => $this->tweetContent, "tweetDate" => $formattedDate];
+		$parameters = ["ProfileId" => $this->ProfileId, "profileActivationToken" => $this->profileActivationToken, "profileEmail" => $this->profileEmail, "profileHash" => $this->profileHash,"profilePhone" => $this->profilePhone, "profileSalt" => $this->profileSalt];
 		$statement->execute($parameters);
-		// update the null tweetId with what mySQL just gave us
+		// update the null profileId with what mySQL just gave us
 		$this->profileId = intval($pdo->lastInsertId());
 	}
 
@@ -283,12 +282,47 @@ class Profile implements \JsonSerializable{
 			throw(new \PDOException("unable to update a profile that does not exist"));
 		}
 		// create query template
-		$query = "UPDATE profile SET ProfileId = :ProfileId, tweetContent = :tweetContent, tweetDate = :tweetDate WHERE tweetId = :tweetId";
+		$query = "UPDATE profile SET ProfileId = :ProfileId, profileActivationToken = :profileActivationTokent, profileEmail = : WHERE profileId = :profileId";
 		$statement = $pdo->prepare($query);
 		// bind the member variables to the place holders in the template
-		$parameters = ["ProfileId" => $this->ProfileId, "tweetContent" => $this->tweetContent, "tweetDate" => $formattedDate, "tweetId" => $this->tweetId];
+		$parameters = ["ProfileId" => $this->ProfileId, "profileActivationToken" => $this->profileActivationToken, "profileEmail" => $this->profileEmail, "profileHash" => $this->profileHash,"profilePhone" => $this->profilePhone, "profileSalt" => $this->profileSalt];
 		$statement->execute($parameters);
 	}
+	/**
+	 * gets the profileEmail by ProfileID
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @param int $productId to search for
+	 * @return \SplFixedArray array of Products found or null if not found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when variables are not the correct data type
+	 **/
+	public static function getprofileIdByprofileEmail(\PDO $pdo, int $profileId) : \SplFixedArray {
+		// sanitize the profile id
+		$ProfileId = filter_var($profileId, FILTER_VALIDATE_INT);
+		if($profileId <= 0) {
+			throw(new \PDOException("profile id is not positive"));
+		}
+		// create query template
+		$query = "SELECT profileId, profileEmail, profilePhone FROM `product WHERE profileId = :profileId";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holders in the template
+		$parameters = ["profileId" => $profileId];
+		$statement->execute($parameters);
+		// build the array of products
+		$proudct = new \SplFixedArray($statement->rowCount());
+		$statement->setFetchMode(\PDO::FETCH_ASSOC);
+		while(($row = $statement->fetch()) !== false) {
+			try {
+				$profileId = new profileId($row["profileID"], $row["profilePhone"], $row["profileEmail"]);
+				$profileIdId[$profileId->key()] = $profileId;
+				$profileId->next();
+			} catch(\Exception $exception) {
+				// if the row couldn't be converted, rethrow it
+				throw(new \PDOException($exception->getMessage(), 0, $exception));
+			}
+		}
+		return ($profileID);
 
 /**
  * formats the state variables for JSON serialization
