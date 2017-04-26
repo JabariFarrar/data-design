@@ -53,14 +53,16 @@ class Product implements  \JsonSerialize {
 	 * @throws \RangeException if $newProductId is not positive
 	 * @throws \TypeError if $newProductId is not an integer *
 	 **/
-	public function setproductId (?int $newProductId) :
+	public function setproductId(?int $newProductId) : void {
 	// if profile id is null immediately return it if ($newProductId === null) {
 	$this->productId = null;
-	return;}
+	return;
+	}
 	//verify the product Id is postive
-	if($newProductId <=0) throw (new \RangeException("profile id is not positive"));}
+	if($newProductId <=0) { throw(new \RangeException("product id is not positive"));}
 	//convert and store the product id
-	$this->productId = $newProductId
+	$this->productId = $newProductId;
+}
 
 	/**
 	 * accessor method for productName
@@ -80,7 +82,7 @@ class Product implements  \JsonSerialize {
 		$newProductName = trim($newProductName);
 		$newProductName = filter_var($newProductName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 		if(empty($newProductName) === true) {
-			throw (new \InvalidArguementException ("productName content is empty or insecure"));
+			throw (new \InvalidArgumentException ("productName content is empty or insecure"));
 		}
 		//verify the productName will fit in the database
 		if(strlen($newProductName) > 64) {
