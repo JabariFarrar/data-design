@@ -13,22 +13,19 @@ class Favorite implement \JsonSerializable {
 	 * favoriteId for this Profile;
 	 * @var int|null $favoriteProfileId
 	 **/
-	private
-	$favoriteProfileId;
+	private $favoriteProfileId;
 
 	/**
 	 * favoriteProductId for this Product
 	 * @var int|null $favoriteProductId
 	 **/
-	private
-	$favoriteProductId;
+	private $favoriteProductId;
 
 	/**
 	 * favoriteDate of this product
 	 * @var \DateTime $favoriteDate
 	 **/
-	private
-	$favoriteDate;
+	private $favoriteDate;
 
 	/**
 	 * Constructor for this favorite
