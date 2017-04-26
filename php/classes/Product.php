@@ -4,7 +4,7 @@
  * An example of what it is like to favorite a bad etsy site
  * @author Jabari Farrar<jfarrar1@cnm.edu>
  */
-class Product implements  \JsonSerializable {
+class Product implements  \JsonSerialize {
 
 	//create state variables
 
@@ -38,7 +38,6 @@ class Product implements  \JsonSerializable {
 		}
 	}
 
-	// accessors & mutators for each state variable]]]]
 
 	/**
 	 * accessor method for productId
@@ -54,7 +53,7 @@ class Product implements  \JsonSerializable {
 	 * @throws \RangeException if $newProductId is not positive
 	 * @throws \TypeError if $newProductId is not an integer *
 	 **/
-	public function setProductId(?int $newProductId) :
+	public function setproductId (?int $newProductId) :
 	// if profile id is null immediately return it if ($newProductId === null) {
 	$this->productId = null;
 	return;}
@@ -160,7 +159,7 @@ class Product implements  \JsonSerializable {
 		$statement->execute($parameters);
 	}
 	/**
-	 * gets the Product Name by Product ID
+	 * gets the Product Name by Product Id
 	 *
 	 * @param \PDO $pdo PDO connection object
 	 * @param int $productId to search for
@@ -168,10 +167,10 @@ class Product implements  \JsonSerializable {
 	 * @throws \PDOException when mySQL related errors occur
 	 * @throws \TypeError when variables are not the correct data type
 	 **/
-	public static function getproductNameByproductId(\PDO $pdo, int $likeTweetId) : \SplFixedArray {
+	public static function getproductNameByproductId(\PDO $pdo, int $favoriteProductId) : \SplFixedArray {
 		// sanitize the product id
 		$likeProductId = filter_var($productId, FILTER_VALIDATE_INT);
-		if($ProductId <= 0) {
+		if($productId <= 0) {
 			throw(new \PDOException("product id is not positive"));
 		}
 		// create query template
@@ -185,7 +184,7 @@ class Product implements  \JsonSerializable {
 		$statement->setFetchMode(\PDO::FETCH_ASSOC);
 		while(($row = $statement->fetch()) !== false) {
 			try {
-				$productId = new productId($row["productID"], $row["productName"], $row["productPrice"]);
+				$productId = new productId($row["productId"], $row["productName"], $row["productPrice"]);
 				$productId[$productId->key()] = $productId;
 				$productId->next();
 			} catch(\Exception $exception) {
@@ -193,7 +192,7 @@ class Product implements  \JsonSerializable {
 				throw(new \PDOException($exception->getMessage(), 0, $exception));
 			}
 		}
-		return ($productID);
+		return ($productId);
 
 		/**
 		 * updates this Product in mySQL
@@ -211,17 +210,18 @@ class Product implements  \JsonSerializable {
 			$query = "UPDATE Product SET productId = : ProuctId, ProductName = :ProductName, productPrice = :ProductPrice WHERE ProductId = :productId";
 			$statement = $pdo->prepare($query);
 			// bind the member variables to the place holders in the template
-			$parameters = ["ProductId" => $this->ProductId, "productName" => $this->productName, "productPrice"  $this-> prouduct "productPrice"];
+			$parameters = ["ProductId" => $this->ProductId, "productName" => $this->productName, "productPrice" $this->prouduct "productPrice"];
 			$statement->execute($parameters);
 		}
 
 
-	}	/**
+		/**
 	 * formats the state variables for JSON serialization
 	 *
 	 * @return array resulting state variables to serialize
 	 **/
 	public function jsonSerialize() {
 		$fields = get_object_vars($this);
+		return ($fields);
 	}
 }

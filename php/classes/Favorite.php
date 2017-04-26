@@ -5,7 +5,7 @@
  * @author Jabari Farrar<jfarrar1@cnm.edu>
  */
 
-class Favorite implement \JsonSerializable {
+class Favorite implements \JsonSerialize {
 	use validateDate;
 
 
@@ -65,7 +65,7 @@ class Favorite implement \JsonSerializable {
 	 **/
 	public function setfavoriteProfileId(?int $newfavoriteProfileId): void {
 
-		//verfy the ProfileID is positive
+		//verfy the favoriteProfileID is positive
 		if($newfavoriteProfileId <= 0) {
 			throw(new\RangeException ("favorite ProfileId is not positive"));
 		}
@@ -241,5 +241,6 @@ class Favorite implement \JsonSerializable {
 	 **/
 	public function jsonSerialize() {
 		$fields = get_object_vars($this);
+	return ($fields);
 	}
 }
