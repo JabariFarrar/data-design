@@ -31,7 +31,7 @@ class Favorite implements \JsonSerialize {
 	 * Constructor for this favorite
 	 * @param int $favoriteProfileId of the parent profile
 	 * @param int $favoriteProductId of the parent profile
-	 * @param \ $favoriteDate | null $newfavoriteDate date the product was liked
+	 * @param \ $favoriteDate | null $newfavoriteDate date the product was favorited
 	 * @throws \Exception if some other exception occurs
 	 **/
 

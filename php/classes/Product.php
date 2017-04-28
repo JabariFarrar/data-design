@@ -26,24 +26,24 @@ class Product implements  \JsonSerialize {
 	 **/
 	private $productPrice;
 
-	public function __construct(?int $newProductId, string $newProductName, float $newProductPrice) {
+	public function __construct(?int $newProductId, ?string $newProductName, ?float $newProductPrice) {
 		try {
 			$this->setProductId($newProductId);
 			$this->setProductName($newProductName);
 			$this->setProductPrice($newProductPrice);
-		} //determine what exception type was thrown
+		}
+		//determine what exception type was thrown
 		catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
 	}
 
-
 	/**
 	 * accessor method for productId
-	 * @return int|null value of productId*
+	 * @return int|null value of productId
 	 **/
-	public function getProductId():?int {
+	public function getProductId(): int {
 		return ($this->productId);
 	}
 
@@ -51,15 +51,17 @@ class Product implements  \JsonSerialize {
 	 * mutator method for productId
 	 * @param int|null $newProductId new value of productId
 	 * @throws \RangeException if $newProductId is not positive
-	 * @throws \TypeError if $newProductId is not an integer *
+	 * @throws \TypeError if $newProductId is not an integer
 	 **/
-	public function setproductId(?int $newProductId) : void {
-	// if profile id is null immediately return it if ($newProductId === null) {
+	public function setProductId(?int $newProductId) : void {
+	 if ($newProductId === null) {
 	$this->productId = null;
 	return;
 	}
-	//verify the product Id is postive
-	if($newProductId <=0) { throw(new \RangeException("product id is not positive"));}
+	//verify the productId is postive
+	if($newProductId <= 0) {
+	 	throw(new \RangeException("product id is not positive"));
+	}
 	//convert and store the product id
 	$this->productId = $newProductId;
 }
@@ -69,7 +71,8 @@ class Product implements  \JsonSerialize {
 	 * @return string  value of productName
 	 **/
 	public function getProductName(): string {
-		return ($this->productName);
+	return ($this->productName);
+}
 
 	/**
 	 * mutator method for productName
@@ -77,7 +80,7 @@ class Product implements  \JsonSerialize {
 	 * @throws \RangeException if $ProductName is >64 characters
 	 * @throws \TypeError if $ProductName is not a string*
 	 **/
-	public function setProductName(string $newProductName): void {
+	public function setProductName(?string $newProductName): void {
 		// verify the productName is secure
 		$newProductName = trim($newProductName);
 		$newProductName = filter_var($newProductName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
@@ -103,7 +106,7 @@ class Product implements  \JsonSerialize {
 
 	/**
 	 * mutator method for productPrice
-	 * @param int|null $newProductPrice new value of productPrice
+	 * @param float|null $newProductPrice new value of productPrice
 	 * @throws \RangeException if $newProductPrice is not positive
 	 * @throws \TypeError if $newProductPrice is not an integer *
 	 **/
@@ -142,7 +145,7 @@ class Product implements  \JsonSerialize {
 		$this->productId = intval($pdo->lastInsertId());
 	}
 	/**
-	 * deletes this favorite from mySQL
+	 * deletes from mySQL
 	 *
 	 * @param \PDO $pdo PDO connection object
 	 * @throws \PDOException when mySQL related errors occur
@@ -150,7 +153,7 @@ class Product implements  \JsonSerialize {
 	 **/
 	public function delete(\PDO $pdo) : void {
 		// enforce the productId is not null (i.e., don't delete a product that hasn't been inserted)
-		if($this->ProductId === null) {
+		if($this->productId === null) {
 			throw(new \PDOException("unable to delete a product that does not exist"));
 		}
 		// create query template
@@ -160,42 +163,6 @@ class Product implements  \JsonSerialize {
 		$parameters = ["productId" => $this->productId];
 		$statement->execute($parameters);
 	}
-	/**
-	 * gets the Product Name by Product Id
-	 *
-	 * @param \PDO $pdo PDO connection object
-	 * @param int $productId to search for
-	 * @return \SplFixedArray array of Products found or null if not found
-	 * @throws \PDOException when mySQL related errors occur
-	 * @throws \TypeError when variables are not the correct data type
-	 **/
-	public static function getproductNameByproductId(\PDO $pdo, int $favoriteProductId) : \SplFixedArray {
-		// sanitize the product id
-		$likeProductId = filter_var($productId, FILTER_VALIDATE_INT);
-		if($productId <= 0) {
-			throw(new \PDOException("product id is not positive"));
-		}
-		// create query template
-		$query = "SELECT productId, productName, productPrice FROM `product WHERE productId = :productId";
-		$statement = $pdo->prepare($query);
-		// bind the member variables to the place holders in the template
-		$parameters = ["productId" => $productId];
-		$statement->execute($parameters);
-		// build the array of products
-		$proudct = new \SplFixedArray($statement->rowCount());
-		$statement->setFetchMode(\PDO::FETCH_ASSOC);
-		while(($row = $statement->fetch()) !== false) {
-			try {
-				$productId = new productId($row["productId"], $row["productName"], $row["productPrice"]);
-				$productId[$productId->key()] = $productId;
-				$productId->next();
-			} catch(\Exception $exception) {
-				// if the row couldn't be converted, rethrow it
-				throw(new \PDOException($exception->getMessage(), 0, $exception));
-			}
-		}
-		return ($productId);
-
 		/**
 		 * updates this Product in mySQL
 		 *
@@ -205,19 +172,18 @@ class Product implements  \JsonSerialize {
 		 **/
 		public function update(\PDO $pdo) : void {
 			// enforce the ProductId is not null (i.e., don't update a ProductId that hasn't been inserted)
-			if($this->favoriteProfileId === null) {
+			if($this->productId === null) {
 				throw(new \PDOException("unable to update a product ID that does not exist"));
 			}
 			// create query template
-			$query = "UPDATE Product SET productId = : ProuctId, ProductName = :ProductName, productPrice = :ProductPrice WHERE ProductId = :productId";
+			$query = "UPDATE Product SET productId = :productId, productName = :productName, productPrice = :productPrice WHERE productId = :productId";
 			$statement = $pdo->prepare($query);
 			// bind the member variables to the place holders in the template
-			$parameters = ["ProductId" => $this->ProductId, "productName" => $this->productName, "productPrice" $this->prouduct "productPrice"];
+			$parameters = ["productId" => $this->productId, "productName" => $this->productName, "productPrice" => $this->productPrice];
 			$statement->execute($parameters);
 		}
 
-
-		/**
+			/**
 	 * formats the state variables for JSON serialization
 	 *
 	 * @return array resulting state variables to serialize
