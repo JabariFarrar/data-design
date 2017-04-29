@@ -4,6 +4,7 @@
  * An example of what it is like to favorite a bad Etsy site
  * @author Jabari Farrar<jfarrar1@cnm.edu>
  */
+namespace Edu\Cnm\DataDesign;
 
 class Favorite implements \JsonSerialize {
 	use ValidateDate;
@@ -178,14 +179,14 @@ $this->setFavoriteDate($newfavoriteDate);
 	}
 
 	/**
- * gets the Like by favoriteProductID and favoriteProfileID
+ * gets the Favorite by favoriteProfileID
  *
  * @param \PDO $pdo PDO connection object
  * @param int $favoriteProfileId profile id to search for
  * @param int $favoriteProductId  id to search for
- * @return Like|null Like found or null if not found
+ * @return Favorite|null Like found or null if not found
  */
-	public static function getfavoriteByLikefavoriteProductIdAndfavoriteProfileId(\PDO $pdo, int $favoriteProfileId, int $favoriteProductId) : ?Like {
+	public static function getfavoriteByfavoriteProductIdAndfavoriteProfileId(\PDO $pdo, int $favoriteProfileId, int $favoriteProductId) : ?Like {
 		// sanitize the profile id and product id before searching
 		if($favoriteProfileId <= 0) {
 			throw(new \PDOException("profile id is not positive"));
@@ -194,7 +195,8 @@ $this->setFavoriteDate($newfavoriteDate);
 			throw(new \PDOException("product id is not positive"));
 		}
 		// create query template
-		$query = "SELECT favoriteProfileId, favoriteProductId, favoriteDate FROM `favorite` WHERE favoriteProfileId = :favoriteProfileId AND favoriteProductId = :favoriteProductId";
+		$query = "SELECT favoriteProfileId, favoriteProductId, favoriteDate FROM `favorite` WHERE favoriteProfileId = :favoriteProfileId AND 		favoriteProductId = :favoriteProductId";
+
 		$statement = $pdo->prepare($query);
 		// bind the product Id and profile id to the place holder in the template
 		$parameters = ["favoriteProfileId" => $favoriteProfileId, "favoriteProductId" => $favoriteProductId];
