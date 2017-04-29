@@ -182,7 +182,76 @@ class Product implements  \JsonSerialize {
 			$parameters = ["productId" => $this->productId, "productName" => $this->productName, "productPrice" => $this->productPrice];
 			$statement->execute($parameters);
 		}
+	/**
+	 * gets the Product by ProductId
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @param INT $productId to search for
+	 * @return \SplFixedArray array of profile found or null if not found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when variables are not the correct data type
+	 **/
+	public static function getProductByProductId(\PDO $pdo, string $productId): ?Product {
+		$productId = trim($productId);
+		// sanitize the profile id
+		$productId = filter_var($productId, FILTER_SANITIZE_NUMBER_INT);
 
+		// create query template
+		$query = "SELECT productId, productName, productPrice FROM product WHERE productId = :productId";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holders in the template
+		$parameters = ["productId" => $productId];
+		$statement->execute($parameters);
+		//binding profile to variable
+		try{
+			$profile = null;
+			$statement->getFetchMode(\PDO::FETCH_ASSOC);
+			$row =$statement->fetch();
+			if($row !== false) {
+				$product = new Product($row["productId"], $row["productName"], $row["productPrice"]);
+			}
+		} catch(\Exception $exception) {
+			// if the row couldn't be converted, rethrow it
+			throw(new \PDOException($exception->getMessage(), 0, $exception));
+		}
+
+		return($profile);
+	}
+	/**
+	 * gets the Product by ProductName
+	 *
+	 * @param \PDO $pdo PDO connection object
+	 * @param INT $productName to search for
+	 * @return \SplFixedArray array of profile found or null if not found
+	 * @throws \PDOException when mySQL related errors occur
+	 * @throws \TypeError when variables are not the correct data type
+	 **/
+	public static function getProductByProductName(\PDO $pdo, string $productName): ?Product {
+		$productName = trim($productName);
+		// sanitize the profile name
+		$productName = filter_var($productName, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+
+		// create query template
+		$query = "SELECT productId, productName, productPrice FROM product WHERE productName = :productName";
+		$statement = $pdo->prepare($query);
+		// bind the member variables to the place holders in the template
+		$parameters = ["productName" => $productName];
+		$statement->execute($parameters);
+		//binding profile to variable
+		try{
+			$profile = null;
+			$statement->getFetchMode(\PDO::FETCH_ASSOC);
+			$row =$statement->fetch();
+			if($row !== false) {
+				$product = new Product($row["productId"], $row["productName"], $row["productPrice"]);
+			}
+		} catch(\Exception $exception) {
+			// if the row couldn't be converted, rethrow it
+			throw(new \PDOException($exception->getMessage(), 0, $exception));
+		}
+
+		return($profile);
+	}
 			/**
 	 * formats the state variables for JSON serialization
 	 *

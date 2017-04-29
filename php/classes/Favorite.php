@@ -6,7 +6,7 @@
  */
 
 class Favorite implements \JsonSerialize {
-	use validateDate;
+	use ValidateDate;
 
 
 	/**
@@ -35,13 +35,13 @@ class Favorite implements \JsonSerialize {
 	 * @throws \Exception if some other exception occurs
 	 **/
 
-	publicfunction __construct(int $newfavoriteProfileId, int $newfavoriteProductId, $newfavoriteDate = null) {
-		try {
-			$this->setfavoriteProfileId($newfavoriteProfileId);
-			$this->setfavoriteProductId($newfavoriteProductId);
-			$this->setfavoriteDate($newfavoriteDate);
-		} //determine what exception type was thrown
-		catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
+	public function __construct(int $newfavoriteProfileId, int $newfavoriteProductId, $newfavoriteDate = null) {
+try {
+$this->setfavoriteProfileId($newfavoriteProfileId);
+$this->setfavoriteProductId($newfavoriteProductId);
+$this->setFavoriteDate($newfavoriteDate);
+ //determine what exception type was thrown
+}catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
 			$exceptionType = get_class($exception);
 			throw(new $exceptionType($exception->getMessage(), 0, $exception));
 		}
@@ -54,7 +54,7 @@ class Favorite implements \JsonSerialize {
 	 **/
 
 	public function getFavoriteProfileId():?int {
-		return ($this->profileId);
+		return ($this->favoriteProfileId);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class Favorite implements \JsonSerialize {
 	 * @return int|null value of favoriteProductId*
 	 **/
 	public function getFavoriteProductId():?int {
-		return ($this->productId);
+		return ($this->favoriteProductId);
 	}
 
 	/**
@@ -87,11 +87,10 @@ class Favorite implements \JsonSerialize {
 	 * @throws \RangeException if $newfavoriteProductId is not positive
 	 * @throws \TypeError if $newfavoriteProductId is not an integer *
 	 **/
-	public
-	function setFavoriteProductId(?int $newfavoriteProductId): void {
+	public function setFavoriteProductId(?int $newfavoriteProductId): void {
 		// if FavoritProductId is null immediately return it
 		if($newfavoriteProductId === null) {
-			$this->ProducteId = null;
+			$this->favoriteProductId = null;
 			return;
 		}
 		//verfy the ProductID is positive
@@ -118,19 +117,22 @@ class Favorite implements \JsonSerialize {
 	 * @throws \InvalidArgumentException if $newfavoriteDate is not a valid object or string
 	 * @throws \RangeException if $newfavoriteDate is a date that does not exist
 	 **/
-	// base case: if the date is null, use the current date and time
-	if($newfavoriteDate === null) {
-		$this->favoritetDate = new \DateTime();
-		return;
+
+	public function setFavoriteDate($newFavoriteDate): void {
+		// base case: if the date is null, use the current date and time
+		if($newFavoriteDate === null) {
+			$this->favoriteDate = new \DateTime();
+			return;
+		}
+		// store the like date using the ValidateDate trait
+		try {
+			$newFavoriteDate = self::validateDateTime($newFavoriteDate);
+		} catch(\InvalidArgumentException | \RangeException $exception) {
+			$exceptionType = get_class($exception);
+			throw(new $exceptionType($exception->getMessage(), 0, $exception));
+		}
+		$this->favoriteDate = $newFavoriteDate;
 	}
-	// store the like date using the ValidateDate trait
-	try {
-		$newfavoriteDate = self::validateDateTime($newfavoriteDate);
-	} catch(\InvalidArgumentException | \RangeException $exception) {
-		$exceptionType = get_class($exception);
-		throw(new $exceptionType($exception->getMessage(), 0, $exception));
-	}
-	$this->favoriteDate = $newfavoriteDate;
 
 	/**
 	 * inserts this favorites into mySQL

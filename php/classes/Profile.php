@@ -4,6 +4,7 @@
  * An example of what it is like to favorite a bad etsy site
  * @author Jabari Farrar<jfarrar1@cnm.edu>
  */
+namespace Edu\Cnm\DataDesign;
 class Profile implements \JsonSerialize {
 
 	//create state variables
@@ -44,7 +45,7 @@ class Profile implements \JsonSerialize {
 	 **/
 	private $profileSalt;
 
-	public function __construct(?int $newProfileId, string $newprofileEmail, string $newProfileActivationToken, string $newProfileHash, string $newProfilePhone, string $newProfileSalt) {
+	public function __construct(?int $newProfileId,  string $newProfileActivationToken, string $newprofileEmail, string $newProfileHash, string $newProfilePhone, string $newProfileSalt) {
 		try {
 			$this->setProfileId($newProfileId);
 			$this->setProfileActivationToken($newProfileActivationToken);

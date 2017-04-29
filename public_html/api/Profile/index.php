@@ -1,8 +1,8 @@
 <?php
 
-require_once dirname(_DIR_, 3) . "/vendor/autoload.php";
-require_once dirname(_DIR_, 3) . "/php/classes/autoload.php";
-require_once dirname(_DIR_, 3) . "/php/lib/xsrf.php";
+require_once(dirname(__DIR__, 3) . "/vendor/autoload.php");
+require_once(dirname(__DIR__, 3) . "/php/classes/autoload.php");
+//require_once(dirname(__DIR__, 3) . "/php/lib/xsrf.php");
 require_once("/etc/apache2/capstone-mysql/encrypted-config.php");
 
 use Edu\Cnm\DataDesign\{Profile};
@@ -11,6 +11,10 @@ use Edu\Cnm\DataDesign\{Profile};
  *
  * @author Jabari Farrar <jofarrar@gmail.com>
  */
+//verify the session, start if not active
+if(session_status() !== PHP_SESSION_ACTIVE) {
+	session_start();
+}
 
 	//prepare an empty reply
 	$reply = new stdClass();
@@ -35,6 +39,7 @@ use Edu\Cnm\DataDesign\{Profile};
 			$profilePhone = filter_input(INPUT_GET, "profilePhone", FILTER_VALIDATE_INT);
 			$profileActivationToken = filter_input(INPUT_GET, "profileActivationToken", FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 			$profileEmail = filter_input(INPUT_GET, "profileEmail", FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+			$profilePassword = filter_input(INPUT_GET, "profilePassword", FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
 			//make sure the id is valid for methods that require it
 			if(($method === "DELETE" || $method === "PUT") && (empty($id) === true || $id < 0)) {
@@ -80,7 +85,7 @@ use Edu\Cnm\DataDesign\{Profile};
 				// This Line Then decodes the JSON package and stores that result in $requestObject
 				//make sure tweet content is available (required field)
 
-				if(empty($requestObject->profileID) === true) {
+				if(empty($requestObject->profileId) === true) {
 					throw(new \InvalidArgumentException ("No content for Profile.", 405));
 				}
 
@@ -92,49 +97,59 @@ use Edu\Cnm\DataDesign\{Profile};
 				if($method === "PUT") {
 					//enforce that the end user has a XSRF token.
 					verifyXsrf();
-					// retrieve the tweet to update
-					$tweet = Tweet::getTweetByTweetId($pdo, $id);
-					if($tweet === null) {
+					// retrieve the profile to update
+					$profile = Profile::getProfileByProfileId($pdo, $id);
+					if($profile === null) {
 						throw(new RuntimeException("Profile does not exist", 404));
 					}
-					//enforce the user is signed in and only trying to edit their own tweet
-					if(empty($_SESSION["profile"]) === true || $_SESSION["profile"]->getProfileId() !== $profile->getTweetProfileId()) {
-						throw(new \InvalidArgumentException("You are not allowed to edit this tweet", 403));
+					//enforce the user is signed in and only trying to edit their own profile
+					if(empty($_SESSION["profile"]) === true || $_SESSION["profile"]->getProfileId() !== $profile->getProfileId()) {
+						throw(new \InvalidArgumentException("You are not allowed to edit this profile", 403));
 					}
 					// update all attributes
-					$profile->setprofileEmail($requestObject->profileEmail);
-					$pr->update($pdo);
+					$profile->setProfileEmail($requestObject->profileEmail);
+					$profile->setProfileHash($requestObject->profileHash);
+					$profile->setProfilePhone($requestObject->profilePhone);
+					$profile->setProfileSalt($requestObject->profileSalt);
+					$profile->update($pdo);
 					// update reply
 					$reply->message = "Profile updated OK";
 				} else if($method === "POST") {
 					//enforce that the end user has a XSRF token.
 					verifyXsrf();
 					// enforce the user is signed in
-					if(empty($_SESSION["profile"]) === true) {
-						throw(new \InvalidArgumentException("you must be logged in to post tweets", 403));
+					if(!empty($_SESSION["profile"]) === true) {
+						throw(new \InvalidArgumentException("you already have an account", 403));
 					}
-					// create new tweet and insert into the database
-					$tweet = new profile (null, $requestObject->ProfileId, $requestObject->profileEmail, null);
-					$tweet->insert($pdo);
+					if(!empty(Profile::getProfileByProfileEmail($pdo, $requestObject->profileEmail))){
+						throw(new \InvalidArgumentException("this e-mail already exists", 403));
+					}
+					//Refrenced from Sprout-swap
+					$salt = bin2hex(random_bytes(128));
+					$hash = hash_pbkdf2("sha512", $profilePassword, $salt, 262144);
+					$profileActivationToken = bin2hex(random_bytes(32));
+					// create new profile and insert into the database
+					$profile = new Profile (null,  $profileActivationToken,$requestObject->profileEmail, $hash, $requestObject->profilePhone, $salt);
+					$profile->insert($pdo);
 					// update reply
 					$reply->message = "Profile created OK";
 				}
 			} else if($method === "DELETE") {
 				//enforce that the end user has a XSRF token.
 				verifyXsrf();
-				// retrieve the Tweet to be deleted
-				$tweet = Tweet::getTweetByTweetId($pdo, $id);
-				if($tweet === null) {
-					throw(new RuntimeException("Tweet does not exist", 404));
+				// retrieve the Profile to be deleted
+				$profile = Profile::getProfileByProfileId($pdo, $id);
+				if($profile === null) {
+					throw(new RuntimeException("Profile does not exist", 404));
 				}
-				//enforce the user is signed in and only trying to edit their own tweet
-				if(empty($_SESSION["profile"]) === true || $_SESSION["profile"]->getProfileId() !== $tweet->getTweetProfileId()) {
-					throw(new \InvalidArgumentException("You are not allowed to delete this tweet", 403));
+				//enforce the user is signed in and only trying to edit their own profile
+				if(empty($_SESSION["profile"]) === true || $_SESSION["profile"]->getProfileId() !== $profile->getProfileId()) {
+					throw(new \InvalidArgumentException("You are not allowed to delete this profile", 403));
 				}
-				// delete tweet
-				$tweet->delete($pdo);
+				// delete profile
+				$profile->delete($pdo);
 				// update reply
-				$reply->message = "Tweet deleted OK";
+				$reply->message = "Profile deleted OK";
 			} else {
 				throw (new InvalidArgumentException("Invalid HTTP method request"));
 			}
